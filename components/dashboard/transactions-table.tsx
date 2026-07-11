@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, ImageIcon, Filter, X } from 'lucide-react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, ImageIcon, Filter, X, Wallet, CreditCard, Smartphone } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { DynamicIcon } from '@/components/dynamic-icon';
 import { formatCurrency, formatDate, getStartOfDay, getStartOfWeek, getStartOfMonth, getStartOfYear } from '@/lib/format';
 import { useSettingsStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
-import type { TransactionWithCategory, SortField, SortDirection, DateFilter } from '@/lib/types';
+import type { TransactionWithCategory, SortField, SortDirection, DateFilter, PaymentMethod } from '@/lib/types';
 import { format } from 'date-fns';
 import {
   Dialog, DialogContent, DialogTitle,
@@ -217,6 +217,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                   </button>
                 </th>
                 <th className="px-4 py-3 text-center font-medium text-muted-foreground">Receipt</th>
+                <th className="px-4 py-3 text-center font-medium text-muted-foreground">Paid via</th>
                 <th className="px-4 py-3 text-center font-medium text-muted-foreground">Status</th>
               </tr>
             </thead>
@@ -262,6 +263,9 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                       )}
                     </td>
                     <td className="px-4 py-3 text-center">
+                      <PaymentMethodBadge method={t.payment_method} />
+                    </td>
+                    <td className="px-4 py-3 text-center">
                       <span className={cn(
                         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                         t.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'
@@ -303,6 +307,9 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     <div>
                       <p className="text-sm font-medium">{t.item_name}</p>
                       <p className="text-xs text-muted-foreground">{t.category.name} · {formatDate(t.date)}</p>
+                      <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                        <PaymentMethodBadge method={t.payment_method} compact />
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
@@ -337,6 +344,21 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function PaymentMethodBadge({ method, compact = false }: { method: PaymentMethod; compact?: boolean }) {
+  const config = {
+    cash: { icon: Wallet, label: 'Cash', cls: 'bg-amber-500/10 text-amber-600' },
+    card: { icon: CreditCard, label: 'Card', cls: 'bg-blue-500/10 text-blue-600' },
+    upi: { icon: Smartphone, label: 'UPI', cls: 'bg-violet-500/10 text-violet-600' },
+  };
+  const { icon: Icon, label, cls } = config[method];
+  return (
+    <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium', cls)}>
+      <Icon className="h-3 w-3" />
+      {compact ? label : <span className="capitalize">{label}</span>}
+    </span>
   );
 }
 

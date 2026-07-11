@@ -2,6 +2,8 @@ export type TransactionType = 'expense' | 'investment';
 
 export type TransactionStatus = 'completed' | 'pending';
 
+export type PaymentMethod = 'cash' | 'card' | 'upi';
+
 export interface Category {
   id: string;
   name: string;
@@ -24,6 +26,7 @@ export interface Transaction {
   receipt_url: string | null;
   notes: string | null;
   status: TransactionStatus;
+  payment_method: PaymentMethod;
   created_at: string;
   updated_at: string;
   category?: Category;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon, Wallet, CreditCard, Smartphone } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import { createTransaction } from '@/lib/db';
 import { useSettingsStore } from '@/lib/store';
 import { formatCurrency, formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import type { TransactionType, Category } from '@/lib/types';
+import type { TransactionType, Category, PaymentMethod } from '@/lib/types';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -40,6 +40,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
   const [date, setDate] = useState<Date>(new Date());
   const [receipt, setReceipt] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -53,6 +54,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
       setDate(new Date());
       setReceipt(null);
       setNotes('');
+      setPaymentMethod('upi');
       setErrors({});
     }
   }, [open]);
@@ -115,6 +117,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
         receipt_url: receipt,
         notes: notes.trim() || null,
         status: 'completed',
+        payment_method: paymentMethod,
       });
       toast.success(`${type === 'expense' ? 'Expense' : 'Investment'} added successfully`);
       refetch();
@@ -346,6 +349,33 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                       />
                     </PopoverContent>
                   </Popover>
+                </div>
+
+                {/* Payment method */}
+                <div className="space-y-1.5">
+                  <Label>Payment Method</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { value: 'cash', label: 'Cash', icon: Wallet },
+                      { value: 'card', label: 'Card', icon: CreditCard },
+                      { value: 'upi', label: 'UPI', icon: Smartphone },
+                    ] as const).map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setPaymentMethod(opt.value)}
+                        className={cn(
+                          'flex flex-col items-center gap-1.5 rounded-xl border-2 py-3 transition-all',
+                          paymentMethod === opt.value
+                            ? 'border-primary bg-primary/5 text-primary'
+                            : 'border-border hover:bg-accent'
+                        )}
+                      >
+                        <opt.icon className="h-5 w-5" />
+                        <span className="text-xs font-medium">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Receipt upload */}

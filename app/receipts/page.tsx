@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Receipt, X, Search, ImageIcon } from 'lucide-react';
+import { Receipt, X, Search, ImageIcon, Wallet, CreditCard, Smartphone } from 'lucide-react';
 import { PageContainer } from '@/components/layout/page-container';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useAllData } from '@/hooks/use-data';
 import { useSettingsStore } from '@/lib/store';
 import { formatCurrency, formatDate } from '@/lib/format';
+import type { PaymentMethod } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import type { TransactionWithCategory } from '@/lib/types';
 
@@ -129,7 +130,10 @@ export default function ReceiptsPage() {
                     </div>
                     {/* Footer */}
                     <div className="flex items-center justify-between p-3">
-                      <span className="text-xs text-muted-foreground">{formatDate(t.date)}</span>
+                      <div className="flex items-center gap-2">
+                        <PaymentMethodIcon method={t.payment_method} />
+                        <span className="text-xs text-muted-foreground">{formatDate(t.date)}</span>
+                      </div>
                       <span
                         className={cn(
                           'text-sm font-semibold',
@@ -207,7 +211,7 @@ export default function ReceiptsPage() {
                     <Badge variant="outline" className="mt-1 capitalize">{previewTx.type}</Badge>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-sm sm:grid-cols-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Date</p>
                     <p className="font-medium">{formatDate(previewTx.date)}</p>
@@ -215,6 +219,13 @@ export default function ReceiptsPage() {
                   <div>
                     <p className="text-xs text-muted-foreground">Status</p>
                     <p className="font-medium capitalize">{previewTx.status}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Payment</p>
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <PaymentMethodIcon method={previewTx.payment_method} />
+                      <span className="capitalize">{previewTx.payment_method}</span>
+                    </div>
                   </div>
                 </div>
                 {previewTx.notes && (
@@ -230,4 +241,15 @@ export default function ReceiptsPage() {
       </Dialog>
     </PageContainer>
   );
+}
+
+function PaymentMethodIcon({ method }: { method: PaymentMethod }) {
+  const Icon = method === 'cash' ? Wallet : method === 'card' ? CreditCard : Smartphone;
+  const cls =
+    method === 'cash'
+      ? 'text-amber-600'
+      : method === 'card'
+        ? 'text-blue-600'
+        : 'text-violet-600';
+  return <Icon className={cn('h-4 w-4', cls)} />;
 }
