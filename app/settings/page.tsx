@@ -21,8 +21,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useSettingsStore } from '@/lib/store';
 import { CURRENCIES } from '@/lib/types';
-import { supabase } from '@/lib/supabase';
+import { dummyStore } from '@/lib/dummy-store';
 import { useAllData } from '@/hooks/use-data';
+import { dummyCategories } from '@/data/categories';
+import { dummyTransactions } from '@/data/transactions';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -70,17 +72,11 @@ export default function SettingsPage() {
     toast.success('Backup downloaded');
   };
 
-  const handleReset = async () => {
-    try {
-      await supabase.from('transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-      await supabase.from('categories').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-      settings.resetSettings();
-      refetch();
-      toast.success('Application reset');
-    } catch (err) {
-      toast.error('Failed to reset');
-      console.error(err);
-    }
+  const handleReset = () => {
+    dummyStore.resetAll(dummyCategories, dummyTransactions);
+    settings.resetSettings();
+    refetch();
+    toast.success('Application reset');
   };
 
   return (
@@ -223,7 +219,7 @@ export default function SettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Built with</span>
-              <span className="font-medium">Next.js + Supabase</span>
+              <span className="font-medium">Next.js</span>
             </div>
           </div>
         </SettingsSection>
