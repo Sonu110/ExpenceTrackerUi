@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import {
   User, DollarSign, Moon, Sun, Bell, Download, DatabaseBackup,
-  RotateCcw, Info, Mail, Check, type LucideIcon,
+  RotateCcw, Info, Mail, Check, LogOut, type LucideIcon,
 } from 'lucide-react';
 import { PageContainer } from '@/components/layout/page-container';
 import { Card } from '@/components/ui/card';
@@ -29,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const settings = useSettingsStore();
   const { transactions, categories, refetch } = useAllData();
@@ -77,6 +79,12 @@ export default function SettingsPage() {
     settings.resetSettings();
     refetch();
     toast.success('Application reset');
+  };
+
+  const handleLogout = () => {
+    settings.resetSettings();
+    router.push('/login');
+    toast.success('Logged out successfully');
   };
 
   return (
@@ -223,6 +231,22 @@ export default function SettingsPage() {
             </div>
           </div>
         </SettingsSection>
+
+        {/* Logout */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+        >
+          <Button
+            variant="outline"
+            className="w-full justify-center border-red-200 text-red-500 hover:bg-red-500 hover:text-white dark:border-red-900/50"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </motion.div>
       </div>
     </PageContainer>
   );

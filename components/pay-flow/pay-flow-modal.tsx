@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon, Wallet, CreditCard, Smartphone } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon, Wallet, CreditCard, Smartphone, CalendarIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -336,7 +336,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Calendar className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {formatDate(date)}
                       </Button>
                     </PopoverTrigger>
