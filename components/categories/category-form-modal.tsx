@@ -13,7 +13,6 @@ import { DynamicIcon, iconMap } from '@/components/dynamic-icon';
 import { createCategory, updateCategory, deleteCategory } from '@/lib/db';
 import { CATEGORY_COLORS, CATEGORY_ICONS, type Category, type TransactionType } from '@/lib/types';
 import { useSettingsStore } from '@/lib/store';
-import { formatCurrency } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -39,7 +38,7 @@ export function CategoryFormModal({
   const [color, setColor] = useState(CATEGORY_COLORS[0]);
   const [icon, setIcon] = useState(CATEGORY_ICONS[0]);
   const [budgetLimit, setBudgetLimit] = useState('');
-  const [unlimited, setUnlimited] = useState(type === 'investment');
+  const [unlimited, setUnlimited] = useState(type === 'investment' || type === 'income');
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +58,7 @@ export function CategoryFormModal({
         setColor(CATEGORY_COLORS[0]);
         setIcon(CATEGORY_ICONS[0]);
         setBudgetLimit('');
-        setUnlimited(type === 'investment');
+        setUnlimited(type === 'investment' || type === 'income');
         setDescription('');
       }
       setErrors({});
@@ -81,7 +80,7 @@ export function CategoryFormModal({
     if (!unlimited) {
       const limit = parseFloat(budgetLimit);
       if (!budgetLimit || isNaN(limit) || limit <= 0) {
-        errs.budgetLimit = 'Budget limit must be greater than 0';
+        errs.budgetLimit = type === 'income' ? 'Income target must be greater than 0' : 'Budget limit must be greater than 0';
       }
     }
     setErrors(errs);
@@ -132,6 +131,10 @@ export function CategoryFormModal({
       setSubmitting(false);
     }
   };
+
+  const currencySymbol = currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '¥';
+  const limitLabel = type === 'income' ? 'Minimum Expected Income' : type === 'investment' ? 'Target Amount' : 'Budget Limit';
+  const limitPlaceholder = type === 'income' ? '40000' : '5000';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -208,13 +211,13 @@ export function CategoryFormModal({
             </div>
           </div>
 
-          {/* Budget limit */}
+          {/* Budget limit / Income target */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="budget">Budget Limit</Label>
-              {type === 'investment' && (
+              <Label htmlFor="budget">{limitLabel}</Label>
+              {(type === 'investment' || type === 'income') && (
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="unlimited" className="text-xs text-muted-foreground">Unlimited</Label>
+                  <Label htmlFor="unlimited" className="text-xs text-muted-foreground">No target</Label>
                   <Switch id="unlimited" checked={unlimited} onCheckedChange={setUnlimited} />
                 </div>
               )}
@@ -223,22 +226,27 @@ export function CategoryFormModal({
               <>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    {currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '¥'}
+                    {currencySymbol}
                   </span>
                   <Input
                     id="budget"
                     type="number"
                     value={budgetLimit}
                     onChange={(e) => setBudgetLimit(e.target.value)}
-                    placeholder="5000"
+                    placeholder={limitPlaceholder}
                     className={`pl-8 ${errors.budgetLimit ? 'border-red-500' : ''}`}
                   />
                 </div>
                 {errors.budgetLimit && <p className="text-xs text-red-500">{errors.budgetLimit}</p>}
+                {type === 'income' && (
+                  <p className="text-xs text-muted-foreground">Set the minimum you expect to earn. Anything above this shows as profit.</p>
+                )}
               </>
             )}
             {unlimited && (
-              <p className="text-xs text-muted-foreground">No spending limit for this category</p>
+              <p className="text-xs text-muted-foreground">
+                {type === 'income' ? 'No income target for this category' : 'No spending limit for this category'}
+              </p>
             )}
           </div>
 

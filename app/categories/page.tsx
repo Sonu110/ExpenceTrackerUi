@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, TrendingDown, TrendingUp } from 'lucide-react';
+import { Plus, Pencil, TrendingDown, TrendingUp, Banknote } from 'lucide-react';
 import { PageContainer } from '@/components/layout/page-container';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
@@ -27,7 +27,7 @@ export default function CategoriesPage() {
 
   const getSpent = (categoryId: string): number => {
     return transactions
-      .filter((t) => t.category_id === categoryId && t.type === 'expense')
+      .filter((t) => t.category_id === categoryId && t.type === activeTab)
       .reduce((sum, t) => sum + Number(t.amount), 0);
   };
 
@@ -42,13 +42,16 @@ export default function CategoriesPage() {
   };
 
   return (
-    <PageContainer title="Categories" description="Manage your expense and investment categories">
+    <PageContainer title="Categories" description="Manage your expense, income and investment categories">
       <div className="space-y-4">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TransactionType)}>
-          <TabsList className="w-full max-w-xs">
+          <TabsList className="w-full max-w-md">
             <TabsTrigger value="expense" className="flex-1 gap-1.5">
               <TrendingDown className="h-4 w-4" /> Expense
+            </TabsTrigger>
+            <TabsTrigger value="income" className="flex-1 gap-1.5">
+              <Banknote className="h-4 w-4" /> Income
             </TabsTrigger>
             <TabsTrigger value="investment" className="flex-1 gap-1.5">
               <TrendingUp className="h-4 w-4" /> Investment
@@ -123,6 +126,43 @@ export default function CategoriesPage() {
                               )}
                             />
                           </div>
+                        </div>
+                      ) : activeTab === 'income' && limit ? (
+                        <div className="mt-3 space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">
+                              Target: {formatCurrency(limit, currency)}
+                            </span>
+                            <span className="text-muted-foreground">
+                              Earned: {formatCurrency(spent, currency)}
+                            </span>
+                          </div>
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 0.5 }}
+                              className={cn(
+                                'h-full rounded-full',
+                                spent >= limit ? 'bg-sky-500' : 'bg-muted-foreground/40'
+                              )}
+                            />
+                          </div>
+                          {spent > limit ? (
+                            <div className="flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-2 py-1">
+                              <TrendingUp className="h-3 w-3 text-sky-500" />
+                              <span className="text-xs font-medium text-sky-500">
+                                Profit: {formatCurrency(spent - limit, currency)}
+                              </span>
+                            </div>
+                          ) : spent < limit ? (
+                            <div className="flex items-center gap-1.5 rounded-lg bg-muted px-2 py-1">
+                              <TrendingDown className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs font-medium text-muted-foreground">
+                                {formatCurrency(limit - spent, currency)} to target
+                              </span>
+                            </div>
+                          ) : null}
                         </div>
                       ) : (
                         <p className="mt-3 text-xs text-muted-foreground">
