@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Settings, FolderOpen, Plus, Wallet, Receipt } from 'lucide-react';
+import { Home, Settings, FolderOpen, Plus, Wallet, Receipt, ListChecks } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePayFlow } from '@/components/pay-flow/pay-flow-provider';
 
 const desktopNavItems = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/transactions', label: 'Transactions', icon: ListChecks },
   { href: '/categories', label: 'Categories', icon: FolderOpen },
   { href: '/receipts', label: 'Receipts', icon: Receipt },
   { href: '/settings', label: 'Settings', icon: Settings },
@@ -83,6 +84,18 @@ export function BottomNav() {
             Home
           </Link>
 
+          {/* Transactions — left of center */}
+          <Link
+            href="/transactions"
+            className={cn(
+              'flex w-16 flex-col items-center gap-0.5 py-1.5 text-[11px] font-medium transition-colors',
+              pathname === '/transactions' ? 'text-primary' : 'text-muted-foreground'
+            )}
+          >
+            <ListChecks className="h-5 w-5" />
+            Activity
+          </Link>
+
           {/* Pay — center floating circle */}
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -94,7 +107,7 @@ export function BottomNav() {
             <Plus className="h-6 w-6 text-white" />
           </motion.button>
 
-          {/* Categories — right */}
+          {/* Categories — right of center */}
           <Link
             href="/categories"
             className={cn(
@@ -104,6 +117,18 @@ export function BottomNav() {
           >
             <FolderOpen className="h-5 w-5" />
             Categories
+          </Link>
+
+          {/* Receipts — right */}
+          <Link
+            href="/receipts"
+            className={cn(
+              'flex w-16 flex-col items-center gap-0.5 py-1.5 text-[11px] font-medium transition-colors',
+              pathname === '/receipts' ? 'text-primary' : 'text-muted-foreground'
+            )}
+          >
+            <Receipt className="h-5 w-5" />
+            Receipts
           </Link>
         </div>
       </div>

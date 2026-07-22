@@ -43,6 +43,10 @@ export default function DashboardPage() {
       .filter((t) => t.type === 'investment')
       .reduce((sum, t) => sum + Number(t.amount), 0);
 
+    const totalIncome = filteredTransactions
+      .filter((t) => t.type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
     const monthStart = getStartOfMonth();
     const thisMonthSpending = filteredTransactions
       .filter((t) => t.type === 'expense' && new Date(t.date) >= monthStart)
@@ -54,7 +58,7 @@ export default function DashboardPage() {
 
     const remainingBudget = Math.max(0, totalBudget - totalExpense);
 
-    return { totalExpense, totalInvestment, thisMonthSpending, remainingBudget };
+    return { totalExpense, totalInvestment, totalIncome, thisMonthSpending, remainingBudget };
   }, [filteredTransactions, categories]);
 
   if (loading) {
@@ -65,8 +69,8 @@ export default function DashboardPage() {
         action={<HeaderActions />}
       >
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5">
+            {[...Array(5)].map((_, i) => (
               <Skeleton key={i} className="h-28 rounded-xl" />
             ))}
           </div>
@@ -91,6 +95,7 @@ export default function DashboardPage() {
         <SummaryCards
           totalExpense={stats.totalExpense}
           totalInvestment={stats.totalInvestment}
+          totalIncome={stats.totalIncome}
           remainingBudget={stats.remainingBudget}
           thisMonthSpending={stats.thisMonthSpending}
         />
@@ -134,6 +139,7 @@ function TypeFilterDropdown({ value, onChange }: { value: TypeFilter; onChange: 
   const options: { value: TypeFilter; label: string }[] = [
     { value: 'all', label: 'All' },
     { value: 'expense', label: 'Expense' },
+    { value: 'income', label: 'Income' },
     { value: 'investment', label: 'Investment' },
   ];
   const current = options.find((o) => o.value === value);

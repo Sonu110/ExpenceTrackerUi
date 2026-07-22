@@ -29,7 +29,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDir, setSortDir] = useState<SortDirection>('desc');
-  const [typeFilter, setTypeFilter] = useState<'all' | 'expense' | 'investment'>('all');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'expense' | 'investment' | 'income'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
   const [customRange, setCustomRange] = useState<{ from?: Date; to?: Date }>({});
@@ -126,6 +126,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="investment">Investment</SelectItem>
                 </SelectContent>
               </Select>
@@ -234,7 +235,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                   >
                     <td className="px-4 py-3 text-muted-foreground">{formatDate(t.date)}</td>
                     <td className="px-4 py-3">
-                      <Badge variant={t.type === 'expense' ? 'destructive' : 'default'} className="capitalize">
+                      <Badge variant={t.type === 'expense' ? 'destructive' : t.type === 'income' ? 'secondary' : 'default'} className={cn('capitalize', t.type === 'income' && 'border-sky-500/30 bg-sky-500/10 text-sky-600')}>
                         {t.type}
                       </Badge>
                     </td>
@@ -250,7 +251,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                       </div>
                     </td>
                     <td className="px-4 py-3 font-medium">{t.item_name}</td>
-                    <td className={cn('px-4 py-3 text-right font-semibold', t.type === 'expense' ? 'text-red-500' : 'text-green-500')}>
+                    <td className={cn('px-4 py-3 text-right font-semibold', t.type === 'expense' ? 'text-red-500' : t.type === 'income' ? 'text-sky-500' : 'text-green-500')}>
                       {t.type === 'expense' ? '-' : '+'}{formatCurrency(Number(t.amount), currency)}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -313,7 +314,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={cn('text-sm font-semibold', t.type === 'expense' ? 'text-red-500' : 'text-green-500')}>
+                    <p className={cn('text-sm font-semibold', t.type === 'expense' ? 'text-red-500' : t.type === 'income' ? 'text-sky-500' : 'text-green-500')}>
                       {t.type === 'expense' ? '-' : '+'}{formatCurrency(Number(t.amount), currency)}
                     </p>
                     {t.receipt_url && (

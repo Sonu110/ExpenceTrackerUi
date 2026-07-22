@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { TrendingDown, TrendingUp, Wallet, CalendarDays, type LucideIcon } from 'lucide-react';
+import { TrendingDown, TrendingUp, Wallet, CalendarDays, Banknote, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/format';
 import { useSettingsStore } from '@/lib/store';
@@ -50,6 +50,7 @@ function SummaryCard({ title, amount, icon: Icon, gradient, iconBg, delay = 0, s
 interface SummaryCardsProps {
   totalExpense: number;
   totalInvestment: number;
+  totalIncome: number;
   remainingBudget: number;
   thisMonthSpending: number;
 }
@@ -57,11 +58,12 @@ interface SummaryCardsProps {
 export function SummaryCards({
   totalExpense,
   totalInvestment,
+  totalIncome,
   remainingBudget,
   thisMonthSpending,
 }: SummaryCardsProps) {
   return (
-    <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-5">
       <SummaryCard
         title="Total Expense"
         amount={totalExpense}
@@ -69,6 +71,14 @@ export function SummaryCards({
         gradient="bg-red-500"
         iconBg="bg-red-500/10 text-red-500"
         delay={0}
+      />
+      <SummaryCard
+        title="Total Income"
+        amount={totalIncome}
+        icon={Banknote}
+        gradient="bg-sky-500"
+        iconBg="bg-sky-500/10 text-sky-500"
+        delay={0.05}
       />
       <SummaryCard
         title="Total Investment"
@@ -84,7 +94,7 @@ export function SummaryCards({
         icon={Wallet}
         gradient="bg-blue-500"
         iconBg="bg-blue-500/10 text-blue-500"
-        delay={0.2}
+        delay={0.15}
       />
       <SummaryCard
         title="This Month"
@@ -92,7 +102,7 @@ export function SummaryCards({
         icon={CalendarDays}
         gradient="bg-purple-500"
         iconBg="bg-purple-500/10 text-purple-500"
-        delay={0.3}
+        delay={0.2}
       />
     </div>
   );

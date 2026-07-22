@@ -1,4 +1,4 @@
-export type TransactionType = 'expense' | 'investment';
+export type TransactionType = 'expense' | 'investment' | 'income';
 
 export type TransactionStatus = 'completed' | 'pending';
 

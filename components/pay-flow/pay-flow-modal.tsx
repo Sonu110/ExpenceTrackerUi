@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon, Wallet, CreditCard, Smartphone, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Upload, X, ImageIcon, Wallet, CreditCard, Smartphone, CalendarIcon, TrendingDown, TrendingUp, Banknote } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -119,7 +119,8 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
         status: 'completed',
         payment_method: paymentMethod,
       });
-      toast.success(`${type === 'expense' ? 'Expense' : 'Investment'} added successfully`);
+      const label = type === 'expense' ? 'Expense' : type === 'income' ? 'Income' : 'Investment';
+      toast.success(`${label} added successfully`);
       refetch();
       onOpenChange(false);
     } catch (err) {
@@ -422,7 +423,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                   disabled={submitting}
                   className="w-full gradient-pay text-white shadow-glow"
                 >
-                  {submitting ? 'Saving...' : `Add ${type === 'expense' ? 'Expense' : 'Investment'}`}
+                  {submitting ? 'Saving...' : `Add ${type === 'expense' ? 'Expense' : type === 'income' ? 'Income' : 'Investment'}`}
                 </Button>
               </motion.div>
             )}
