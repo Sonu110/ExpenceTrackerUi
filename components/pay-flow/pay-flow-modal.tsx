@@ -63,7 +63,7 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
 
   const getCategorySpent = (categoryId: string): number => {
     return transactions
-      .filter((t) => t.category_id === categoryId && t.type === 'expense')
+      .filter((t) => t.category_id === categoryId && t.type === type)
       .reduce((sum, t) => sum + Number(t.amount), 0);
   };
 
@@ -183,28 +183,40 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                 className="p-5"
               >
                 <p className="mb-4 text-center text-sm text-muted-foreground">Choose transaction type</p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <button
                     onClick={() => { setType('expense'); setStep('category'); }}
-                    className="group flex flex-col items-center gap-3 rounded-2xl border-2 border-border p-6 transition-all hover:border-primary hover:bg-primary/5"
+                    className="group flex flex-col items-center gap-2 rounded-2xl border-2 border-border p-4 transition-all hover:border-primary hover:bg-primary/5"
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 transition-transform group-hover:scale-110">
-                      <ArrowLeft className="h-6 w-6 rotate-45" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 transition-transform group-hover:scale-110">
+                      <TrendingDown className="h-6 w-6" />
                     </div>
                     <div className="text-center">
-                      <p className="font-semibold">Expense</p>
+                      <p className="text-sm font-semibold">Expense</p>
                       <p className="text-xs text-muted-foreground">Track spending</p>
                     </div>
                   </button>
                   <button
-                    onClick={() => { setType('investment'); setStep('category'); }}
-                    className="group flex flex-col items-center gap-3 rounded-2xl border-2 border-border p-6 transition-all hover:border-primary hover:bg-primary/5"
+                    onClick={() => { setType('income'); setStep('category'); }}
+                    className="group flex flex-col items-center gap-2 rounded-2xl border-2 border-border p-4 transition-all hover:border-primary hover:bg-primary/5"
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-green-500 transition-transform group-hover:scale-110">
-                      <Check className="h-6 w-6" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-500 transition-transform group-hover:scale-110">
+                      <Banknote className="h-6 w-6" />
                     </div>
                     <div className="text-center">
-                      <p className="font-semibold">Investment</p>
+                      <p className="text-sm font-semibold">Income</p>
+                      <p className="text-xs text-muted-foreground">Track earnings</p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => { setType('investment'); setStep('category'); }}
+                    className="group flex flex-col items-center gap-2 rounded-2xl border-2 border-border p-4 transition-all hover:border-primary hover:bg-primary/5"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 text-green-500 transition-transform group-hover:scale-110">
+                      <TrendingUp className="h-6 w-6" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-semibold">Investment</p>
                       <p className="text-xs text-muted-foreground">Grow wealth</p>
                     </div>
                   </button>
@@ -250,6 +262,11 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                             {disabled ? 'Limit reached' : `${formatCurrency(spent, currency)} / ${formatCurrency(limit, currency)}`}
                           </p>
                         )}
+                        {type === 'income' && limit && (
+                          <p className="text-xs text-muted-foreground">
+                            {formatCurrency(spent, currency)} / {formatCurrency(limit, currency)}
+                          </p>
+                        )}
                         {disabled && (
                           <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white">
                             <AlertTriangle className="h-3 w-3" />
@@ -293,6 +310,14 @@ export function PayFlowModal({ open, onOpenChange }: PayFlowModalProps) {
                       <p className="text-xs text-muted-foreground">Available</p>
                       <p className="text-sm font-semibold text-green-500">
                         {formatCurrency(Math.max(0, selectedCategory.budget_limit - getCategorySpent(selectedCategory.id)), currency)}
+                      </p>
+                    </div>
+                  )}
+                  {type === 'income' && selectedCategory.budget_limit && (
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">Target</p>
+                      <p className="text-sm font-semibold text-sky-500">
+                        {formatCurrency(selectedCategory.budget_limit, currency)}
                       </p>
                     </div>
                   )}
